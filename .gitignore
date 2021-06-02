@@ -1,0 +1,7 @@
+/.idea/
+/.gradle/
+/bin/
+build/
+logs/
+.vscode/launch.json
+*.code-workspace
