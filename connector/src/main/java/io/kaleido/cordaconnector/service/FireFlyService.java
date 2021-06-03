@@ -17,9 +17,15 @@
 package io.kaleido.cordaconnector.service;
 
 import io.kaleido.cordaconnector.exception.CordaConnectionException;
+import io.kaleido.cordaconnector.model.request.BroadcastBatchRequest;
 import io.kaleido.cordaconnector.rpc.NodeRPCClient;
+import io.kaleido.firefly.cordapp.flows.CreateBroacastBatchFlow;
+import net.corda.core.messaging.FlowHandle;
+import net.corda.core.transactions.SignedTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class FireFlyService {
@@ -30,7 +36,8 @@ public class FireFlyService {
     public FireFlyService() {
     }
 
-    public void broadcastBatch() throws CordaConnectionException {
-        rpcClient.getRpcProxy().nodeInfo();
+    public String broadcastBatch(BroadcastBatchRequest request) throws CordaConnectionException, ExecutionException, InterruptedException {
+        SignedTransaction txResult = rpcClient.getRpcProxy().startFlowDynamic(CreateBroacastBatchFlow.class, request.getBatchId(), request.getPayloadRef(), request.getObservers(), request.getGroupId()).getReturnValue().get();
+        return txResult.getId().toString();
     }
 }
