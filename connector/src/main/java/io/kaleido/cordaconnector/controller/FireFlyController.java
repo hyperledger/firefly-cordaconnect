@@ -17,11 +17,14 @@
 package io.kaleido.cordaconnector.controller;
 
 import io.kaleido.cordaconnector.exception.CordaConnectionException;
+import io.kaleido.cordaconnector.model.request.BroadcastBatchRequest;
 import io.kaleido.cordaconnector.model.response.ConnectorResponse;
 import io.kaleido.cordaconnector.service.FireFlyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.concurrent.ExecutionException;
 
 @RestController
 public class FireFlyController {
@@ -29,9 +32,9 @@ public class FireFlyController {
     private FireFlyService fireFlyService;
 
     @PostMapping("/broadcastBatch")
-    public ConnectorResponse broadcastBatch() throws CordaConnectionException {
-        fireFlyService.broadcastBatch();
-        return new ConnectorResponse();
+    public ConnectorResponse broadcastBatch(BroadcastBatchRequest request) throws CordaConnectionException, InterruptedException, ExecutionException {
+        String txHash = fireFlyService.broadcastBatch(request);
+        return new ConnectorResponse(txHash);
     }
 
 }
