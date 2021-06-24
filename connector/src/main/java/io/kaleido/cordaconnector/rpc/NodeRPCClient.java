@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import rx.Observable;
 import rx.subjects.PublishSubject;
 
 import javax.annotation.PreDestroy;
@@ -42,9 +43,13 @@ public class NodeRPCClient {
 
     @Autowired
     public NodeRPCClient(CordaRPCConfig config) {
+        logger.info(config.toString());
         rpcConfig = config;
         connectionRx = PublishSubject.create();
+    }
 
+    public Observable<Boolean> getRpcConnectionObservable() {
+        return connectionRx.asObservable();
     }
 
     public CordaRPCOps getRpcProxy() throws CordaConnectionException {

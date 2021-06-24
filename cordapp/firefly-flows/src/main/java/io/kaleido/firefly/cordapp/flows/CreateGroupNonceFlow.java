@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@StartableByRPC
 @InitiatingFlow
 public class CreateGroupNonceFlow extends FlowLogic<StateAndRef<FireflyGroupNonce>> {
     private final UniqueIdentifier groupId;
@@ -81,7 +82,7 @@ public class CreateGroupNonceFlow extends FlowLogic<StateAndRef<FireflyGroupNonc
         final Command<FireflyContract.Commands.OrderingGroupCreate> txCommand = new Command<>(
                 new FireflyContract.Commands.OrderingGroupCreate(),
                 signers);
-        final FireflyGroupNonce groupNonce = new FireflyGroupNonce(groupId, getOurIdentity(), partiesForContext, 0);
+        final FireflyGroupNonce groupNonce = new FireflyGroupNonce(groupId, getOurIdentity(), partiesForContext, 0L);
 
         final TransactionBuilder txBuilder = new TransactionBuilder(notary)
                 .addOutputState(groupNonce, FireflyContract.ID)

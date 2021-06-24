@@ -22,10 +22,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.NoSuchElementException;
+
 @ControllerAdvice
 public class ConnectionExceptionHandler {
     @ExceptionHandler(CordaConnectionException.class)
     public ResponseEntity<ConnectorResponse<String>> handleCordaException(CordaConnectionException e) {
         return new ResponseEntity<ConnectorResponse<String>>(new ConnectorResponse<String>(HttpStatus.CONFLICT.value(), false, e.getMessage(), null), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<ConnectorResponse<String>> handleNotFound(NoSuchElementException e) {
+        return new ResponseEntity<ConnectorResponse<String>>(new ConnectorResponse<String>(HttpStatus.CONFLICT.value(), false, e.getMessage(), null), HttpStatus.NOT_FOUND);
     }
 }

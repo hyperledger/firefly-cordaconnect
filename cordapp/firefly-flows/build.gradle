@@ -17,6 +17,11 @@ repositories {
     maven { url 'https://repo.gradle.org/gradle/libs-releases' }
 }
 
+// Corda serialization requires function parameter names to be included in the class file
+compileJava {
+    options.compilerArgs << '-parameters'
+}
+
 cordapp {
     targetPlatformVersion 4
     minimumPlatformVersion 4
