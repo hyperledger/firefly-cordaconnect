@@ -1,3 +1,8 @@
+package io.kaleido.firefly.cordapp.states;
+
+import net.corda.core.identity.AbstractParty;
+import net.corda.core.identity.Party;
+import org.jetbrains.annotations.NotNull;
 // Copyright © 2021 Kaleido, Inc.
 //
 // SPDX-License-Identifier: Apache-2.0
@@ -14,18 +19,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package io.kaleido.firefly.cordapp.states;
-
-import io.kaleido.firefly.cordapp.contracts.FireflyContract;
-import net.corda.core.contracts.BelongsToContract;
-import net.corda.core.identity.AbstractParty;
-import net.corda.core.identity.Party;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@BelongsToContract(FireflyContract.class)
 public class BroadcastBatch implements FireflyEvent {
     private final Party author;
     private final String batchId;

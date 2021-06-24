@@ -14,17 +14,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package io.kaleido.cordaconnector.model.common;
+package io.kaleido.cordaconnector.model.request;
+import net.corda.core.identity.Party;
 import java.util.List;
 import java.util.UUID;
 
-public class BroadcastBatchData {
+public class BroadcastBatchRequest {
     private String batchId;
     private String payloadRef;
-    private List<String> observers;
+    private List<Party> observers;
     private UUID groupId;
 
-    public BroadcastBatchData() {
+    public BroadcastBatchRequest() {
     }
 
     public String getBatchId() {
@@ -43,11 +44,11 @@ public class BroadcastBatchData {
         this.payloadRef = payloadRef;
     }
 
-    public List<String> getObservers() {
+    public List<Party> getObservers() {
         return observers;
     }
 
-    public void setObservers(List<String> observers) {
+    public void setObservers(List<Party> observers) {
         this.observers = observers;
     }
 
@@ -57,15 +58,5 @@ public class BroadcastBatchData {
 
     public void setGroupId(UUID groupId) {
         this.groupId = groupId;
-    }
-
-    @Override
-    public String toString() {
-        return "BroadcastBatchData{" +
-                "batchId='" + batchId + '\'' +
-                ", payloadRef='" + payloadRef + '\'' +
-                ", observers=" + observers +
-                ", groupId=" + groupId +
-                '}';
     }
 }

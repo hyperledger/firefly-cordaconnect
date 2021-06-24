@@ -1,6 +1,0 @@
-databaseChangeLog:
-- changeSet:
-    id:  0.1
-    author:  Kaleido Inc
-    changes:
-      -  empty:  {}
