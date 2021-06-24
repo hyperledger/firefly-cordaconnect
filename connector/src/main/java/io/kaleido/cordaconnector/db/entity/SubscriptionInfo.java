@@ -16,6 +16,7 @@
 
 package io.kaleido.cordaconnector.db.entity;
 
+import io.kaleido.cordaconnector.model.common.SubscriptionData;
 import net.corda.core.node.services.Vault;
 
 import javax.persistence.*;
@@ -25,7 +26,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 @Entity
-@Table
+@Table(name = "subscriptions")
 public class SubscriptionInfo implements Serializable {
     @Id
     @Size(max = 39)
@@ -70,6 +71,90 @@ public class SubscriptionInfo implements Serializable {
     protected void onUpdate() {
         Date now = new Date();
         updated = new Timestamp(now.getTime());
+    }
+
+    public SubscriptionInfo(String id, SubscriptionData subscriptionData) {
+        this.id = id;
+        this.name = subscriptionData.getName();
+        this.stateStatus = subscriptionData.getFilter().getStateStatus();
+        this.relevancyStatus = subscriptionData.getFilter().getRelevancyStatus();
+        this.stateType = subscriptionData.getFilter().getStateType();
+        this.fromTime = Timestamp.from(subscriptionData.getFromTime());
+    }
+
+    public SubscriptionInfo() {}
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public EventStreamInfo getStream() {
+        return stream;
+    }
+
+    public void setStream(EventStreamInfo stream) {
+        this.stream = stream;
+    }
+
+    public String getStateType() {
+        return stateType;
+    }
+
+    public void setStateType(String stateType) {
+        this.stateType = stateType;
+    }
+
+    public Vault.StateStatus getStateStatus() {
+        return stateStatus;
+    }
+
+    public void setStateStatus(Vault.StateStatus stateStatus) {
+        this.stateStatus = stateStatus;
+    }
+
+    public Vault.RelevancyStatus getRelevancyStatus() {
+        return relevancyStatus;
+    }
+
+    public void setRelevancyStatus(Vault.RelevancyStatus relevancyStatus) {
+        this.relevancyStatus = relevancyStatus;
+    }
+
+    public Timestamp getFromTime() {
+        return fromTime;
+    }
+
+    public void setFromTime(Timestamp fromTime) {
+        this.fromTime = fromTime;
+    }
+
+    public Timestamp getLastCheckpoint() {
+        return lastCheckpoint;
+    }
+
+    public void setLastCheckpoint(Timestamp lastCheckpoint) {
+        this.lastCheckpoint = lastCheckpoint;
+    }
+
+    public Timestamp getCreated() {
+        return created;
+    }
+
+
+    public Timestamp getUpdated() {
+        return updated;
     }
 }
 

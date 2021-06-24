@@ -14,12 +14,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package io.kaleido.cordaconnector.config;
+package io.kaleido.cordaconnector.model.request;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@Configuration
-@ConfigurationProperties("db")
-public class EventStreamConfig {
+import java.util.UUID;
+
+@JsonIgnoreProperties("id")
+public class ConnectorRequest<T> {
+    private T data;
+    private String id;
+
+    public ConnectorRequest() {
+        this.id = UUID.randomUUID().toString();
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public String getId() {
+        return id;
+    }
 }

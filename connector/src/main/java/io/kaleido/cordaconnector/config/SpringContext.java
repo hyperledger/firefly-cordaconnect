@@ -13,13 +13,22 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
 package io.kaleido.cordaconnector.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
-@Configuration
-@ConfigurationProperties("db")
-public class EventStreamConfig {
+@Component
+public class SpringContext implements ApplicationContextAware {
+    private static ApplicationContext context;
+    @Override
+    public void setApplicationContext(ApplicationContext context) throws BeansException {
+        this.context = context;
+    }
+
+    public static ApplicationContext getApplicationContext() {
+        return context;
+    }
 }

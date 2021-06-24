@@ -14,12 +14,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package io.kaleido.cordaconnector.config;
+package io.kaleido.cordaconnector.ws;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+public class ClientMessage {
+    private ClientMessageType type;
+    private String topic;
+    private String message;
 
-@Configuration
-@ConfigurationProperties("db")
-public class EventStreamConfig {
+    public ClientMessage() {
+
+    }
+
+    public ClientMessageType getType() {
+        return type;
+    }
+
+    public void setType(ClientMessageType type) {
+        this.type = type;
+    }
+
+    public String getTopic() {
+        return topic;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

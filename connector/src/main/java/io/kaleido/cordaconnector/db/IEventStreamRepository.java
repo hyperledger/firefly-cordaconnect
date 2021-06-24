@@ -14,12 +14,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package io.kaleido.cordaconnector.config;
+package io.kaleido.cordaconnector.db;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import io.kaleido.cordaconnector.db.entity.EventStreamInfo;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
-@Configuration
-@ConfigurationProperties("db")
-public class EventStreamConfig {
+import java.util.stream.Stream;
+
+@Repository
+public interface IEventStreamRepository extends JpaRepository<EventStreamInfo, String> {
+    @Query("select e from EventStreamInfo e order by e.id asc")
+    Stream<EventStreamInfo> findAllStream();
 }
