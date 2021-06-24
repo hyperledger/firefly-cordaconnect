@@ -18,6 +18,5 @@ package io.kaleido.cordaconnector.service.data;
 
 public class BroadcastBatchResponse {
     public BroadcastBatchResponse() {
-
     }
 }

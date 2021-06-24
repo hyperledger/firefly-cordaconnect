@@ -16,7 +16,10 @@
 
 package io.kaleido.cordaconnector.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.corda.client.jackson.JacksonSupport;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
@@ -48,5 +51,18 @@ public class CordaRPCConfig {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "CordaRPCConfig{" +
+                "host='" + host + '\'' +
+                ", username='" + username + '\'' +
+                '}';
+    }
+
+    @Bean
+    public ObjectMapper registerModule() {
+        return JacksonSupport.createNonRpcMapper();
     }
 }

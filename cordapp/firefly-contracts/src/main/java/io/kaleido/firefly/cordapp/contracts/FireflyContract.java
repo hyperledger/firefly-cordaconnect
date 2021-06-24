@@ -87,7 +87,7 @@ public class FireflyContract implements Contract {
                     signers.containsAll(keys));
             require.using("author should be one of the participants", keys.contains(out.getAuthor().getOwningKey()));
             require.using("The nonce value must be 0.",
-                    out.getNonce() == 0);
+                    out.getNonce() == 0L);
             return null;
         });
     }
