@@ -17,23 +17,30 @@
 package io.kaleido.cordaconnector.controller;
 
 import io.kaleido.cordaconnector.exception.CordaConnectionException;
-import io.kaleido.cordaconnector.model.request.BroadcastBatchRequest;
+import io.kaleido.cordaconnector.model.request.ConnectorRequest;
+import io.kaleido.cordaconnector.model.common.BroadcastBatchData;
 import io.kaleido.cordaconnector.model.response.ConnectorResponse;
 import io.kaleido.cordaconnector.service.FireFlyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.ExecutionException;
 
 @RestController
 public class FireFlyController {
+    private static final Logger logger = LoggerFactory.getLogger(FireFlyController.class);
+
     @Autowired
     private FireFlyService fireFlyService;
 
     @PostMapping("/broadcastBatch")
-    public ConnectorResponse broadcastBatch(BroadcastBatchRequest request) throws CordaConnectionException, InterruptedException, ExecutionException {
-        String txHash = fireFlyService.broadcastBatch(request);
+    public ConnectorResponse<String> broadcastBatch(@RequestBody ConnectorRequest<BroadcastBatchData> request) throws CordaConnectionException, InterruptedException, ExecutionException {
+        String txHash = fireFlyService.broadcastBatch(request.getData());
+        logger.info("Request({}), broadcastBatch (batchID:{}, groupID:{}, payloadRef:{}) creation transaction {} was successful.", request.getId(), request.getData().getBatchId(), request.getData().getGroupId(), request.getData().getPayloadRef(),  txHash);
         return new ConnectorResponse(txHash);
     }
 

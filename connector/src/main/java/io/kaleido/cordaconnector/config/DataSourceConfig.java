@@ -16,7 +16,11 @@
 
 package io.kaleido.cordaconnector.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.sql.DataSource;
 
 @Configuration
 @ConfigurationProperties("db")
@@ -56,5 +60,15 @@ public class DataSourceConfig {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Bean
+    public DataSource getDataSource() {
+        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
+        dataSourceBuilder.driverClassName(driverClassName);
+        dataSourceBuilder.url(url);
+        dataSourceBuilder.username(username);
+        dataSourceBuilder.password(password);
+        return dataSourceBuilder.build();
     }
 }

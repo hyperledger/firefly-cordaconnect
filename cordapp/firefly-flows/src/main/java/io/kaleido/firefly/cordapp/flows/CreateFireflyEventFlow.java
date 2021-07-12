@@ -18,7 +18,9 @@ package io.kaleido.firefly.cordapp.flows;
 
 import co.paralleluniverse.fibers.Suspendable;
 import com.google.common.collect.ImmutableList;
+import io.kaleido.firefly.cordapp.contracts.FireflyContract;
 import io.kaleido.firefly.cordapp.states.FireflyGroupNonce;
+import net.corda.core.contracts.Command;
 import net.corda.core.contracts.ContractState;
 import net.corda.core.contracts.StateAndRef;
 import net.corda.core.contracts.UniqueIdentifier;
@@ -31,16 +33,18 @@ import net.corda.core.node.services.vault.QueryCriteria;
 import net.corda.core.node.services.vault.Sort;
 import net.corda.core.node.services.vault.SortAttribute;
 import net.corda.core.transactions.SignedTransaction;
+import net.corda.core.transactions.TransactionBuilder;
 import net.corda.core.utilities.ProgressTracker;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static net.corda.core.node.services.vault.QueryCriteriaUtils.DEFAULT_PAGE_NUM;
 
 public class CreateFireflyEventFlow<T extends ContractState> extends FlowLogic<SignedTransaction> {
     protected final List<Party> observers;
     protected final UUID groupId;
-    private final ProgressTracker.Step GENERATING_TRANSACTION = new ProgressTracker.Step("Generating transaction based on new AssetInstanceBatchCreated.");
+    private final ProgressTracker.Step GENERATING_TRANSACTION = new ProgressTracker.Step("Generating transaction based on new firefly event.");
     private final ProgressTracker.Step VERIFYING_TRANSACTION = new ProgressTracker.Step("Verifying contract constraints.");
     private final ProgressTracker.Step SIGNING_TRANSACTION = new ProgressTracker.Step("Signing transaction with our private key.");
     private final ProgressTracker.Step FINALISING_TRANSACTION = new ProgressTracker.Step("Obtaining notary signature and recording transaction.") {
@@ -64,23 +68,52 @@ public class CreateFireflyEventFlow<T extends ContractState> extends FlowLogic<S
         return null;
     }
 
+    @Override
+    public ProgressTracker getProgressTracker() {
+        return progressTracker;
+    }
+
     public CreateFireflyEventFlow(List<Party> observers, UUID groupId) {
         this.observers = observers;
         this.groupId = groupId;
     }
 
+    @Suspendable
     @Override
     public SignedTransaction call() throws FlowException {
-        return null;
+        // Obtain a reference to the notary we want to use.
+        final Party notary = getServiceHub().getNetworkMapCache().getNotaryIdentities().get(0);
+        // Generate an unsigned transaction.
+        progressTracker.setCurrentStep(GENERATING_TRANSACTION);
+        Party me = getOurIdentity();
+        final Command<FireflyContract.Commands.FireflyEventCreate> txCommand = new Command<>(
+                new FireflyContract.Commands.FireflyEventCreate(),
+                ImmutableList.of(me.getOwningKey()));
+        final StateAndRef<FireflyGroupNonce> inContext = getGroupNonce(groupId);
+        final T output = getFireflyEvent();
+        final TransactionBuilder txBuilder = new TransactionBuilder(notary)
+                .addInputState(inContext)
+                .addOutputState(output, FireflyContract.ID)
+                .addOutputState(updateGroupNonce(inContext.getState().getData()), FireflyContract.ID)
+                .addCommand(txCommand);
+        progressTracker.setCurrentStep(VERIFYING_TRANSACTION);
+        txBuilder.verify(getServiceHub());
+
+        progressTracker.setCurrentStep(SIGNING_TRANSACTION);
+        final SignedTransaction signedTx = getServiceHub().signInitialTransaction(txBuilder);
+
+        progressTracker.setCurrentStep(FINALISING_TRANSACTION);
+        Set<FlowSession> flowSessions = observers.stream().map(this::initiateFlow).collect(Collectors.toSet());
+        return subFlow(new FinalityFlow(signedTx, flowSessions));
     }
 
     public FireflyGroupNonce updateGroupNonce(FireflyGroupNonce oldNonce) {
-        return new FireflyGroupNonce(oldNonce.getLinearId(), getOurIdentity(), new HashSet<>(oldNonce.getParticipants()), oldNonce.getNonce()+1);
+        return new FireflyGroupNonce(oldNonce.getLinearId(), getOurIdentity(), new LinkedHashSet<>(oldNonce.getParticipants()), oldNonce.getNonce()+1);
     }
 
     @Suspendable
     private StateAndRef<FireflyGroupNonce> getGroupNonce(UUID groupId) throws FlowException {
-        Set<AbstractParty> partiesInContext = new HashSet<>(this.observers);
+        Set<AbstractParty> partiesInContext = new LinkedHashSet<>(this.observers);
         partiesInContext.add(getOurIdentity());
         UniqueIdentifier linearId = new UniqueIdentifier(null, groupId);
         QueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria(
@@ -89,7 +122,6 @@ public class CreateFireflyEventFlow<T extends ContractState> extends FlowLogic<S
                 Vault.StateStatus.UNCONSUMED,
                 null);
         Sort.SortColumn oldestFirst = new Sort.SortColumn(new SortAttribute.Standard(Sort.VaultStateAttribute.RECORDED_TIME), Sort.Direction.ASC);
-        StateAndRef<FireflyGroupNonce> groupNonce = null;
         Vault.Page<FireflyGroupNonce> res = getServiceHub().getVaultService().queryBy(FireflyGroupNonce.class, queryCriteria, new PageSpecification(DEFAULT_PAGE_NUM, 1), new Sort(ImmutableList.of(oldestFirst)));
         if (res.getStates().isEmpty()) {
             return subFlow(new CreateGroupNonceFlow(linearId, partiesInContext));

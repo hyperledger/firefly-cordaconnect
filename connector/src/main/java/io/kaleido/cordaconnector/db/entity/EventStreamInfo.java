@@ -16,7 +16,9 @@
 
 package io.kaleido.cordaconnector.db.entity;
 
-import io.kaleido.cordaconnector.model.response.data.ErrorHandling;
+import io.kaleido.cordaconnector.model.common.ErrorHandling;
+import io.kaleido.cordaconnector.model.common.EventStreamData;
+import io.kaleido.cordaconnector.service.EventStream;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -68,5 +70,90 @@ public class EventStreamInfo implements Serializable {
     protected void onUpdate() {
         Date now = new Date();
         updated = new Timestamp(now.getTime());
+    }
+
+    public EventStreamInfo(String id, EventStreamData streamData) {
+        this.id = id;
+        this.name = streamData.getName();
+        this.batchSize = streamData.getBatchSize();
+        this.batchTimeoutMs = streamData.getBatchTimeoutMS();
+        this.batchRetryDelaySec = streamData.getBlockedRetryDelaySec();
+        this.errorHandling = streamData.getErrorHandling();
+        this.suspended = false;
+        this.websocketTopic = streamData.getWebsocket().getTopic();
+    }
+
+    public EventStreamInfo() {}
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
+    }
+
+    public int getBatchTimeoutMs() {
+        return batchTimeoutMs;
+    }
+
+    public void setBatchTimeoutMs(int batchTimeoutMs) {
+        this.batchTimeoutMs = batchTimeoutMs;
+    }
+
+    public int getBatchRetryDelaySec() {
+        return batchRetryDelaySec;
+    }
+
+    public void setBatchRetryDelaySec(int batchRetryDelaySec) {
+        this.batchRetryDelaySec = batchRetryDelaySec;
+    }
+
+    public ErrorHandling getErrorHandling() {
+        return errorHandling;
+    }
+
+    public void setErrorHandling(ErrorHandling errorHandling) {
+        this.errorHandling = errorHandling;
+    }
+
+    public String getWebsocketTopic() {
+        return websocketTopic;
+    }
+
+    public void setWebsocketTopic(String websocketTopic) {
+        this.websocketTopic = websocketTopic;
+    }
+
+    public boolean isSuspended() {
+        return suspended;
+    }
+
+    public void setSuspended(boolean suspended) {
+        this.suspended = suspended;
+    }
+
+    public Timestamp getCreated() {
+        return created;
+    }
+
+    public Timestamp getUpdated() {
+        return updated;
     }
 }

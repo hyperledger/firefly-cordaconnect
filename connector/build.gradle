@@ -12,13 +12,11 @@ buildscript {
 }
 
 plugins {
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'org.springframework.boot' version '2.0.2.RELEASE'
+    id 'org.springframework.boot' version '2.1.15.RELEASE'
 }
 
 
 repositories {
-    mavenLocal()
     jcenter()
     mavenCentral()
     maven { url 'https://jitpack.io' }
@@ -27,6 +25,7 @@ repositories {
 }
 
 apply plugin:'java'
+apply plugin: 'application'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.boot'
 
@@ -38,25 +37,45 @@ dependencyManagement {
     }
 }
 
+// Corda serialization requires function parameter names to be included in the class file
+compileJava {
+    options.compilerArgs << '-parameters'
+}
+
 dependencies {
     // CorDapp dependencies
-    compile project(":cordapp:firefly-contracts")
-    compile project(":cordapp:firefly-flows")
+    implementation project(":cordapp:firefly-contracts")
+    implementation project(":cordapp:firefly-flows")
 
     testCompile "junit:junit:4.12"
 
     // Corda dependencies.
-    compile "net.corda:corda-core:$corda_release_version"
-    compile "net.corda:corda-jackson:$corda_release_version"
-    compile "net.corda:corda-rpc:$corda_release_version"
-    compile("org.springframework.boot:spring-boot-starter-websocket:2.0.2.RELEASE") {
+    implementation "net.corda:corda-core:$corda_release_version"
+    implementation "net.corda:corda-rpc:$corda_release_version"
+    implementation "net.corda:corda-jackson:$corda_release_version"
+    implementation 'javax.json:javax.json-api:1.0'
+
+    implementation("org.springframework.boot:spring-boot-starter-websocket:2.1.15.RELEASE") {
         exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
     }
-    compile "org.springframework.boot:spring-boot-starter-log4j2:2.0.2.RELEASE"
-    compile "org.springdoc:springdoc-openapi-ui:1.5.2"
-    compile "org.apache.logging.log4j:log4j-web:2.11.2"
+    implementation ("org.springframework.boot:spring-boot-starter-data-jpa:2.1.15.RELEASE") {
+        exclude group: "org.springframework.boot", module: "spring-boot-starter-logging"
+    }
+    implementation "org.springframework.boot:spring-boot-starter-log4j2:2.1.15.RELEASE"
+    implementation "org.springdoc:springdoc-openapi-ui:1.5.2"
+    implementation "org.apache.logging.log4j:log4j-web:2.11.2"
+    implementation "org.javassist:javassist:3.23.1-GA"
+    runtime "com.h2database:h2:1.4.200"
 }
+
+mainClassName = 'io.kaleido.cordaconnector.Server'
+
 
 springBoot {
     mainClassName = 'io.kaleido.cordaconnector.Server'
+}
+
+task deployFireflyServer(type: JavaExec, dependsOn: jar) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = mainClassName
 }
