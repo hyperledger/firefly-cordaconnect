@@ -182,6 +182,7 @@ public class EventStreamService {
                 eventStream = getEventStreamByTopic(topic);
             } catch (Exception e) {
                 logger.error("Received message from client {} on topic {} for which eventstream doesn't exists", connectionId, topic, e);
+                return;
             }
             switch(message.getType()) {
                 case LISTEN:
