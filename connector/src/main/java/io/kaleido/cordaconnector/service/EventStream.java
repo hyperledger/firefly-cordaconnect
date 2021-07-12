@@ -311,6 +311,6 @@ public class EventStream {
             } catch (IOException | EncodeException e ) {
                 log.error("{}, error while sending batch {} to client {}", eventStreamInfo.getId(), batchCount, connection.getId(), e);
             }
-        }, 100, this.eventStreamInfo.getBatchRetryDelaySec()*1000, TimeUnit.MILLISECONDS);
+        }, 100, this.eventStreamInfo.getBatchRetryDelaySec()* 1000L, TimeUnit.MILLISECONDS);
     }
 }
