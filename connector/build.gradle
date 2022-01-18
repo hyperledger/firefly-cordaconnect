@@ -63,7 +63,7 @@ dependencies {
     }
     implementation "org.springframework.boot:spring-boot-starter-log4j2:2.1.15.RELEASE"
     implementation "org.springdoc:springdoc-openapi-ui:1.5.2"
-    implementation "org.apache.logging.log4j:log4j-web:2.11.2"
+    implementation "org.apache.logging.log4j:log4j-web:2.17.1"
     implementation "org.javassist:javassist:3.23.1-GA"
     runtime "com.h2database:h2:1.4.200"
 }
