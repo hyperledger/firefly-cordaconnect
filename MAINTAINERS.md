@@ -2,14 +2,19 @@
 
 The following is the list of current maintainers this repo:
 
+**Active maintainers**
 | Name             | GitHub          | Email                       | LFID            |
 | ---------------- | --------------- | --------------------------- | --------------- |
-| Amit Panghal     | panghalamit     | amit.panghal@kaleido.io     | shantaraam      |
-| Peter Broadhurst | peterbroadhurst | peter.broadhurst@kaleido.io | peterbroadhurst |
 | Jim Zhang        | jimthematrix    | jim.zhang@kaleido.io        | jimthematrix    |
 
 This list is to be kept up to date as maintainers are added or removed.
 
+**Emeritus maintainers**
+
+| Name             | GitHub          | Email                       | LFID            |
+| ---------------- | --------------- | --------------------------- | --------------- |
+| Amit Panghal     | panghalamit     | amit.panghal@kaleido.io     | shantaraam      |
+| Peter Broadhurst | peterbroadhurst | peter.broadhurst@kaleido.io | peterbroadhurst |
 # Expectations of Maintainers
 
 Maintainers are expected to regularly:
