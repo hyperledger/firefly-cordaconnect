@@ -1,0 +1,26 @@
+# Dependabot configuration
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#
+# Ecosystems in this repo:
+#   - gradle: multi-project build (connector and cordapp subprojects via settings.gradle)
+#
+# Each ecosystem groups ALL of its updates into a single PR per run. Both regular
+# version updates and security fixes are grouped, so Dependabot opens at most one
+# PR per ecosystem per directory (security updates are otherwise opened
+# individually and ungrouped by default).
+
+version: 2
+
+updates:
+  - package-ecosystem: gradle
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 1
+    groups:
+      gradle:
+        applies-to: version-updates
+        patterns: ["*"]
+      gradle-security:
+        applies-to: security-updates
+        patterns: ["*"]
